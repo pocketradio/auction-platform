@@ -1,4 +1,5 @@
 import { Router } from "express";
+import type { Request, Response } from "express";
 import { createAuction, createBid, getAllAuctions, getAuction } from "../services/auction.service.js";
 const auctionRouter = Router();
 
@@ -30,11 +31,12 @@ auctionRouter.get("/:id", async(req, res) => { // details of one auction
     })
 });
 
-auctionRouter.post("/create", async(req,res) => {
-    // verification step here with auth later. below is temporary
+auctionRouter.post("/create", async(req : Request ,res : Response) => {
+
     try{
-        await createAuction(req.body);
-        res.redirect("/auctions");
+        await createAuction(req);
+        console.log('added auction to db');
+        res.sendStatus(200);
     }
     catch(e){
         res.status(400).send("Invalid auction data.");
@@ -42,7 +44,8 @@ auctionRouter.post("/create", async(req,res) => {
 })
 
 auctionRouter.post("/bid", async(req,res) => {
-    
+    // const {id, email} = req.user;
+    // read the email , query db for the user. then entire queue and redis pipeline. 
 })
 
 export { auctionRouter };
