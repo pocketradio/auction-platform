@@ -5,8 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -14,13 +13,14 @@ datasource db {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  name      String?
-  password  String    @db.VarChar(255)
-  auctions  Auction[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          Int       @id @default(autoincrement())
+  email       String    @unique
+  name        String?
+  password    String    @db.VarChar(255)
+  auctions    Auction[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  wonAuctions Auction[] @relation("AuctionWinner")
 }
 
 model Auction {
@@ -35,6 +35,8 @@ model Auction {
   createdAt   DateTime @default(now())
   endsAt      DateTime
   updatedAt   DateTime @updatedAt
+  winner      User?    @relation("AuctionWinner", fields: [winnerId], references: [id])
+  winnerId    Int?
 
   @@index([ownerId])
   @@index([isActive, endsAt])
