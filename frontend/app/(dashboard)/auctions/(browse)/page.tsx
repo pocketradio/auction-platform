@@ -25,21 +25,12 @@ interface Auction {
     updatedAt: string
 }
 
-export default function Page() {
+export default function Lobby() {
     const router = useRouter()
     const [auctions, setAuctions] = useState<Auction[]>([])
     const [userId, setuserId] = useState<number>(-1);
 
     useEffect(() => {
-        fetch("http://localhost:5000/auctions")
-            .then((response) => {
-                if (response.status >= 400) {
-                    throw new Error("Server error :( ")
-                }
-                return response.json()
-            })
-            .then((response) => setAuctions(response.auctions))
-
         fetch("http://localhost:5000/me", {
             credentials: "include"
         })
@@ -56,41 +47,64 @@ export default function Page() {
                 setuserId(id);
 
             })
-    }, [])
+
+        fetch("http://localhost:5000/auctions")
+            .then((response) => {
+                if (response.status >= 400) {
+                    throw new Error("Server error :( ")
+                }
+                return response.json()
+            })
+            .then((response) => setAuctions(response.auctions))
+
+
+    }, [router])
+
 
     useEffect(() => {
         if (userId === -1) { return; }
-        const sse: EventSource = new EventSource("http://localhost:5000/streams")
+        const sse: EventSource = new EventSource("http://localhost:5000/streams/lobby")
 
-        sse.addEventListener("message", (e) => {
+        sse.addEventListener("auction_created", (e) => {
             try {
                 const parsedData = JSON.parse(e.data)
+                setAuctions(previousAuction => [
+                    ...previousAuction,
+                    ...parsedData.auctions,
+                ])
+            } catch (e) {
+                console.error(e)
+            }
+        })
 
-                if (parsedData.type === "auction_created") {
-                    setAuctions(previousAuction => [
-                        ...previousAuction,
-                        ...parsedData.auctions,
-                    ])
-                } else if (parsedData.type === "created_bid") {
-                    //only bidder sees toast
-                    if (parsedData.userId === userId) {
-                        toast.success("Successfully placed bid", {
-                            richColors: true,
-                        })
-                    }
-
-                    setAuctions(prev =>
-                        prev.map(x =>
-                            x.id === parsedData.auctionId
-                                ? { ...x, currentBid: parsedData.currentBid }
-                                : x
-                        )
-                    )
-                } else if (parsedData.type === "auction_closed") {
-                    setAuctions(prev =>
-                        prev.filter(x => x.id !== parsedData.auctionId)
-                    )
+        sse.addEventListener("bid_success", (e) => {
+            try {
+                const parsedData = JSON.parse(e.data)
+                //only bidder sees toast
+                if (parsedData.userId === userId) {
+                    toast.success("Successfully placed bid", {
+                        richColors: true,
+                    })
                 }
+
+                setAuctions(prev =>
+                    prev.map(x =>
+                        x.id === parsedData.auctionId
+                            ? { ...x, currentBid: parsedData.currentBid }
+                            : x
+                    )
+                )
+            } catch (e) {
+                console.error(e)
+            }
+        })
+
+        sse.addEventListener("auction_closed", (e) => {
+            try {
+                const parsedData = JSON.parse(e.data)
+                setAuctions(prev =>
+                    prev.filter(x => x.id !== parsedData.auctionId)
+                )
             } catch (e) {
                 console.error(e)
             }
