@@ -1,11 +1,11 @@
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import { Gavel, CircleDollarSign, Settings, LayoutDashboard, User2, ChevronUp } from "lucide-react"
 
 const items = [
     {
         title: 'Dashboard',
-        url: '/',
+        url: '/dashboard',
         icon: LayoutDashboard
     },
 
@@ -15,13 +15,13 @@ const items = [
         icon: Gavel,
     },
     {
-        title: 'Bidding',
-        url: '/bid',
+        title: 'Your bids',
+        url: '/bids',
         icon: CircleDollarSign,
     },
     {
-        title: 'Settings',
-        url: '/settings',
+        title: 'Create Auction',
+        url: '/create',
         icon: Settings
     }
 ]
