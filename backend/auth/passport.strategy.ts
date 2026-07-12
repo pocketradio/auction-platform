@@ -1,6 +1,6 @@
 import passport, { type DoneCallback } from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import { Strategy as JwtStrategy} from "passport-jwt";
 import { validateUserLogin, type AuthUser } from "../middleware/validateLogin.js";
 import type { Request } from "express";
 
@@ -38,4 +38,3 @@ passport.use(new JwtStrategy(
         return done(null, payload);
     }
 ))
-
