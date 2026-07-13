@@ -20,7 +20,15 @@ type auctionCreated = {
     timestamp: string;
 };
 
-type PublishedMessage = bidCreated | bidRejected | auctionCreated;
+type auctionClosed = {
+    type: "AUCTION_CLOSED";
+    auctionId: number;
+    winner: string | null;
+    winnerId: number | null;
+    finalPrice: unknown;
+};
+
+type PublishedMessage = bidCreated | bidRejected | auctionCreated | auctionClosed;
 
 subClient.subscribe(channel, (message) => {
     const payload = JSON.parse(message) as PublishedMessage;

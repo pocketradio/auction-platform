@@ -11,6 +11,7 @@ import passport from 'passport';
 import "./auth/passport.strategy.js";
 import "./queue/consumer.js";
 import "./redis/subscriber.js"; 
+import { initializeCron } from './services/cron.worker.js';
 
 const app = express();
 const PORT = process.env.PORT||5000;
@@ -33,3 +34,5 @@ app.use('/logout', logoutRouter);
 app.listen(PORT,()=>{
     console.log(`Server starting on port ${PORT}...`);
 })
+
+initializeCron();
