@@ -70,7 +70,7 @@ auctionRouter.post(
                 { exchange: "bid", routingKey: "bid.created" },
                 {
                     auctionId,
-                    id,
+                    userId: id,
                     email,
                     amount,
                     timestamp: Date.now()
