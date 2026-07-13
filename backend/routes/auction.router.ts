@@ -66,6 +66,16 @@ auctionRouter.post(
         const { amount } = req.body as { amount: number };
 
         try {
+            const auction = await getAuction(auctionId);
+
+            if (!auction) {
+                return res.status(404).json({ error: "Auction not found" });
+            }
+
+            if (!auction.isActive || auction.endsAt <= new Date()) {
+                return res.status(409).json({ error: "Auction is closed" });
+            }
+
             await pub.send(
                 { exchange: "bid", routingKey: "bid.created" },
                 {
